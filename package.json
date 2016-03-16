@@ -1,0 +1,27 @@
+{
+  "name": "gremlin-console-js",
+  "version": "0.0.0",
+  "description": "Console component for gremlin-server",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel ./src -d lib",
+    "build:umd": "NODE_ENV=production webpack src/index.js umd/gremlin-console.js",
+    "build:min": "NODE_ENV=production webpack -p src/index.js umd/gremlin-console.min.js",
+    "build:watch": "npm run build -- --watch"
+  },
+  "dependencies": {
+    "jquery": "~2.2.1",
+    "gremlin": "~2.1.0",
+    "jquery-ui": "~1.10.5",
+    "cytoscape": "~2.6.6",
+    "babel-cli": "~6.6.5",
+    "webpack": "~1.12.14"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "gremlin",
+    "console"
+  ],
+  "author": "Dylan Millikin",
+  "license": "Apache2"
+}
