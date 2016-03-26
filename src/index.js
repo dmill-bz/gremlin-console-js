@@ -3,6 +3,7 @@ var Gremlin = require( 'gremlin');
 global.consoleJquery = require('jquery');
 var cytoscape = require('cytoscape');
 require('jquery-ui/widget');
+var highland = require('highland');
 
 /**
  * dragDrop JQuery-ui Widget
@@ -20,7 +21,42 @@ require('jquery-ui/widget');
         options: {
             host:'localhost', // the host to connect to
             port:8182, // the port to connect to
-            driverOptions:null, // the gremlin driver options. Check https://github.com/jbmusso/gremlin-javascript
+            driverOptions:{
+                executeHandler: function(stream, callback) {
+                    let errored = false;
+                    let objectMode = false;
+                    let returnValue = [{json:[], text:[]}];
+
+                    highland(stream)
+                    .stopOnError((err) => {
+                      // TODO: this does not seem to halt the stream properly, and make
+                      // the callback being fired twice. We need to get rid of the ugly
+                      // errored variable check.
+                      errored = true;
+                      callback(err);
+                    })
+                    .map(({ result: { data } }) => {
+                      objectMode = !_.isArray(data);
+
+                      return data;
+                    })
+                    .sequence()
+                    .toArray((results) => {
+                      if (!errored) {
+                        let returnCurrent = objectMode ? results[0] : results;
+                        if(returnCurrent.length >= 1 && typeof returnCurrent[0].json != "undefined") {
+                            returnCurrent.forEach((item) => {
+                                returnValue[0].json = returnValue[0].json.concat(item.json);
+                                returnValue[0].text = returnValue[0].text.concat(item.text);
+                            });
+                        } else {
+                            returnValue = returnCurrent;
+                        }
+                        callback(null, returnValue);
+                      }
+                    });
+                }
+            }, // the gremlin driver options. Check https://github.com/jbmusso/gremlin-javascript
             inputElement: null, // if we don't want to create an input element specify which one to use
             vizElement: null, // if we don't want to create a vizualization element specify which one to use
             consoleElement: null, // if we don't want to create a vizualization element specify which one to use
@@ -304,12 +340,12 @@ require('jquery-ui/widget');
                     //lets add line to history
                     if (!err) {
                         if (results.length != 0)
-                        widget.addToViz(results[0].json);
+                            widget.addToViz(results[0].json);
                         this.client.execute('g.E()', (err, results) => {
                             //lets add line to history
                             if (!err) {
                                 if (results.length != 0)
-                                widget.addToViz(results[0].json);
+                                    widget.addToViz(results[0].json);
                                 callback();
                             }
                         });
@@ -350,6 +386,7 @@ require('jquery-ui/widget');
 
         selectInViz: function(results) {
             if(this.vizElement !== null) {
+                let selectedElement = false;
                 //lets only proceed if we have nodes or edges
                 results.forEach($.proxy(function(entry) {
                     //There's a special case for null
@@ -360,26 +397,24 @@ require('jquery-ui/widget');
                             if(entry.type == "vertex") {
                                 var elem = this.visualizer.getElementById(entry.id);
                                 elem.css({textOutlineColor:"red", borderColor : "red"});
+                                selectedElement = true;
                             } else if(entry.type == "edge") {
                                 var elem = this.visualizer.getElementById('e-' + entry.id);
                                 elem.css({textOutlineColor:"red", backgroundColor : "red", lineColor:"red", sourceArrowColor: "red", targetArrowColor: "red", color:"white"});
+                                selectedElement = true;
                             }
                         }, this));
                     }
                 }, this));
 
-                this.visualizer.layout({
-                        //~ name: 'cola',
-                        //~ nodeSpacing: 5,
-                        //~ edgeLengthVal: 45,
-                        //~ animate: true,
-                        //~ randomize: false,
-                        //~ maxSimulationTime: 1500
-                        name: 'cose',
-                        animate: true,
-                        idealEdgeLength: function( edge ){ return 20; },
-                        edgeElasticity: function( edge ){ return 200; }
-                    });
+                if(selectedElement) {
+                    this.visualizer.layout({
+                            name: 'cose',
+                            animate: true,
+                            idealEdgeLength: function( edge ){ return 20; },
+                            edgeElasticity: function( edge ){ return 200; }
+                        });
+                }
             }
         },
 
@@ -408,17 +443,18 @@ require('jquery-ui/widget');
         },
 
         _addTyping: function (str) {
-            var regex = /"[^"]*?"|(?:^|\;) ?(\w+) ?(?=\=)/gmi, result;
+            var regex = /(?:"[^"]*?")|(?:^|\;) ?(\w+) ?(?=\=)/gmi, result;
             var pointer = 0, pointerIncr = 0;
             var output = str;
             var variables = {};
             while ( (result = regex.exec(str)) ) {
-                if(typeof variables[result[1]] != "undefined" || (result[1] != "graph" && result[1] != "g"))
+                if(typeof variables[result[1]] != "undefined" || (result[1] != "graph" && result[1] != "g" && typeof result[1] != "undefined"))
                 {
                     pointer = result.index + pointerIncr + result[0].indexOf(result[1]);
                     output = [output.slice(0, pointer), "def ", output.slice(pointer)].join('');
                     pointerIncr += 4;
                     variables[result[1]] = true; // this means we've already def this variable.
+
                 }
             }
             return output;
