@@ -1,0 +1,39 @@
+/** Console styling **/
+
+.port-query {
+    font-weight:bold;
+    word-wrap: break-word;
+}
+
+.port-error {
+    font-weight:bold;
+    color:red;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.port-response {
+    word-wrap: break-word;
+}
+
+/** Synthax highlighting **/
+
+.number {
+    color:green;
+}
+
+.key {
+    color:black;
+}
+
+.string {
+    color:orange;
+}
+
+.boolean {
+    color:blue;
+}
+
+.null {
+    color:blue;
+}
