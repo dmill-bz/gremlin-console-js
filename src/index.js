@@ -1,7 +1,7 @@
 // Assuming Node.js or Browser environment with browserify:
 import Console from './Console';
 
-global.gremlinConsole = function(...x) {
+export function create(...x) {
     const c = new Console(...x);
     /**
      * register a plugin (example)
@@ -9,3 +9,5 @@ global.gremlinConsole = function(...x) {
     // c.register(new CytoscapeVisualizerPlugin());
     return c;
 }
+
+export default create;

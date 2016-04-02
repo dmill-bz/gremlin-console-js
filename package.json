@@ -8,7 +8,8 @@
     "build:docs": "mr-doc --source src --output api --name gremlin-console -p --theme mr-doc-theme-cayman",
     "build:umd": "NODE_ENV=production webpack src/index.js umd/gremlin-console.js && cp -r static/* umd/",
     "build:min": "NODE_ENV=production webpack -p src/index.js umd/gremlin-console.min.js",
-    "build:watch": "npm run build -- --watch"
+    "build:watch": "npm run build -- --watch",
+    "test": "karma start karma.conf.js --single-run"
   },
   "dependencies": {
     "babel-cli": "~6.6.5",
@@ -24,8 +25,20 @@
     "jquery-ui": "~1.10.5"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "karma": "^0.13.22",
+    "karma-chai": "^0.1.0",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-mocha": "^0.2.2",
+    "karma-mocha-reporter": "^2.0.0",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-sinon": "^1.0.4",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^1.7.0",
+    "mocha": "^2.4.5",
     "mr-doc": "^3.2.1",
     "mr-doc-theme-cayman": "^1.4.0",
+    "phantomjs-prebuilt": "^2.1.7",
     "webpack": "~1.12.14"
   },
   "keywords": [

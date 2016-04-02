@@ -1,6 +1,6 @@
 const config = {
   output: {
-    library: 'gremlin-console',
+    library: 'gremlinConsole',
     libraryTarget: 'umd'
   },
   module: {

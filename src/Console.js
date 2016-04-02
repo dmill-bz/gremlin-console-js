@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import EventEmitter from 'events';
 import Client from './DriverClient';
 import Html from './Html';
 import $ from 'jquery';

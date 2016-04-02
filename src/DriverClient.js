@@ -1,4 +1,4 @@
-let GremlinDriver = require( 'gremlin');
+import GremlinDriver from 'gremlin';
 import Result from './Result';
 
 /**
@@ -22,7 +22,7 @@ class DriverClient {
      * @return void
      */
     constructor(host = "localhost", port = 8182, options = {}) {
-        this.client = GremlinDriver.createClient(host, port, options);
+        this.client = GremlinDriver.createClient(port, host, options);
     }
 
     /**
