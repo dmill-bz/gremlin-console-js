@@ -263,10 +263,10 @@ class Console extends EventEmitter {
      * @return {String} a query with correct typing.
      */
     _addTyping(groovy) {
-        var regex = /(?:"[^"]*?")|(?:^|\;) ?(\w+) ?(?=\=)/gmi, result;
-        var pointer = 0, pointerIncr = 0;
-        var output = groovy;
-        var variables = {};
+        const regex = /(?:"[^"]*?")|(?:^|\;) ?(\w+) ?(?=\=)/gmi, result;
+        let pointer = 0, pointerIncr = 0;
+        let output = groovy;
+        let variables = {};
         while ( (result = regex.exec(groovy)) ) {
             if(typeof variables[result[1]] != "undefined" || (result[1] != "graph" && result[1] != "g" && typeof result[1] != "undefined"))
             {

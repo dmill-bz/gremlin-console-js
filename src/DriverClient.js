@@ -50,8 +50,8 @@ class DriverClient {
     /**
      * Build a result
      *
-     * @param  {Object} Error from the driver.
-     * @param  {String} results a response result string
+     * @param  {Object} err     Error from the driver.
+     * @param  {String} results A response result string
      * @return {Result} a result object
      */
     buildResult(err, results) {
