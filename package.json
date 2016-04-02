@@ -1,6 +1,6 @@
 {
   "name": "gremlin-console-js",
-  "version": "0.0.0",
+  "version": "0.9.0",
   "description": "Console component for gremlin-server",
   "main": "index.js",
   "scripts": {
