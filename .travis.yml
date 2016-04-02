@@ -16,6 +16,7 @@ install:
   - sh -c ./build/gremlin-server/install.sh
   # install dependencies
   - npm install
+  - npm --prefix ./node_modules/gremlin run build
 
 before_script:
   - npm run build
