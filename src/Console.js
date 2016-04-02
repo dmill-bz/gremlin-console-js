@@ -88,8 +88,8 @@ class Console extends EventEmitter {
             this.handleResults(query, result);
         });
 
-        //lets populate history properly
-        if(this.options.history !== null) {
+        //lets populate history properly if it isn't empty
+        if(typeof this.options.history[0] !== 'undefined') {
             this.history = this.options.history;
             this.historyPointer = this.history.length;
             this.populateDbFromHistory();
