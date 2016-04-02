@@ -68,12 +68,9 @@ class Console extends EventEmitter {
             driverOptions: {
                 session: true
             },
+            visualizerOptions: {
+            },
             ...options
-        }
-
-        //lets populate history properly
-        if(this.options.history !== null) {
-            this.history = this.options.history;
         }
 
         //lets init the client
@@ -90,6 +87,13 @@ class Console extends EventEmitter {
         this.on('results', (query, result)=>{
             this.handleResults(query, result);
         });
+
+        //lets populate history properly
+        if(this.options.history !== null) {
+            this.history = this.options.history;
+            this.historyPointer = this.history.length;
+            this.populateDbFromHistory();
+        }
     }
 
     /**
@@ -109,10 +113,12 @@ class Console extends EventEmitter {
     /**
      * Applies logic based on results
      *
-     * @param  {Array} results db results
+     * @param  {String}  query         The query run against db
+     * @param  {Result}  result        The database result object
+     * @param  {Boolean} recordHistory Whether or not we should record this request in the history
      * @return {Void}
      */
-    handleResults(query, result) {
+    handleResults(query, result, recordHistory = true) {
         //add results to window
         let response = $('<div>').addClass('port-section');
         response.append($('<div>').addClass("port-query").html('gremlin> ' + Html.htmlEncode(query)));
@@ -126,7 +132,9 @@ class Console extends EventEmitter {
         this.windowElement.append(response);
         this.windowElement.animate({ scrollTop: this.windowElement[0].scrollHeight }, "slow");
         //add results to history
-        this.populateHistory(query, result);
+        if(recordHistory) {
+            this.populateHistory(query, result);
+        }
     }
 
     /**
@@ -208,6 +216,67 @@ class Console extends EventEmitter {
      */
     register(plugin) {
         plugin.load(this);
+    }
+
+    /**
+     * Populates the state of the graph from the history.
+     * This essentially re-runs all the history queries so that all session variables and graph state exist.
+     *
+     * @return {Void}
+     */
+    populateDbFromHistory() {
+        if(typeof this.history[0].query !== 'undefined') {
+            //lets take all queries and bunch them together to recreate env
+            let query = '';
+            for (let i = 0; (i < this.history.length - 1); i++) {
+                let result = this.client.buildResult(this.history[i].error, this.history[i].results);
+                this.handleResults(this.history[i].query, result, false); // don't emit('results') as some plugins may generate viz on each call.
+                if(typeof result.getError() === 'undefined' || result.getError() == '' || result.getError() == null)
+                    query += this.history[i].query + ";";
+            }
+            //add typing to avoid strange db errors due to sandboxing
+            query = this._addTyping(query);
+
+            //execute the bundled query
+            this.client.execute(query, (result) => {
+                if(!result.getError())
+                {
+                    if(this.history.length > 0) {
+                        //here we need to remove the last history item since we are going to apply it again.
+                        var lastHistory = this.history.splice(-1,1);
+                        this.executeQuery(lastHistory[0].query);
+                    }
+                } else {
+                    console.log("Your initializing script produced an error : \n" + result.getError());
+                    this.options.onError("Your initializing script produced an error : \n" + Html._htmlEncode(result.getError()));
+                }
+            });
+        }
+    }
+
+    /**
+     * Adds typing and defs for query.
+     * This is used internaly to allow the system to issue a long query string of queries that may not have
+     * been required to use typing because they were sent individualy. (sandboxing caveats)
+     *
+     * @param  {String} groovy The query that potentially doesn't have correct typing
+     * @return {String} a query with correct typing.
+     */
+    _addTyping(groovy) {
+        var regex = /(?:"[^"]*?")|(?:^|\;) ?(\w+) ?(?=\=)/gmi, result;
+        var pointer = 0, pointerIncr = 0;
+        var output = groovy;
+        var variables = {};
+        while ( (result = regex.exec(groovy)) ) {
+            if(typeof variables[result[1]] != "undefined" || (result[1] != "graph" && result[1] != "g" && typeof result[1] != "undefined"))
+            {
+                pointer = result.index + pointerIncr + result[0].indexOf(result[1]);
+                output = [output.slice(0, pointer), "def ", output.slice(pointer)].join('');
+                pointerIncr += 4;
+                variables[result[1]] = true; // this means we've already def this variable.
+            }
+        }
+        return output;
     }
 }
 

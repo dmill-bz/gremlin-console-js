@@ -103,7 +103,7 @@ class Result {
      * @return {Object} the "line" in a history entry.
      */
     getHistory() {
-        return {results: this.getResults(), error: this.getError()};
+        return {results: this.getRawResults(), error: this.getError()};
     }
 }
 

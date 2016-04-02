@@ -1,0 +1,134 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Basic example</title>
+    <meta name="description" content="The HTML5 Herald">
+    <meta name="author" content="SitePoint">
+
+    <!-- IMPORTANT INCLUSIONS START -->
+    <link rel="stylesheet" type="text/css" href="../umd/css/default.css">
+    <script src="../umd/gremlin-console.js"></script>
+    <!-- IMPORTANT INCLUSIONS END-->
+
+    <style>
+        /** page styling**/
+
+        html,body {
+            background-color:#EEE;
+            padding:0;
+            margin:0;
+            height:100%;
+            width:100%
+        }
+
+        #window {
+            text-wrap:wrap;
+            height:400px;
+            width: 600px;
+            color: #000;
+            background-color: #FFF;
+            border:1px solid #AAA;
+            -moz-border-top-right-radius: 10px;
+            -moz-border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-top-left-radius: 10px;
+            font-family: "monospace";
+            margin-right:auto;
+            margin-left:auto;
+            padding:10px;
+            font-size:13px;
+        }
+
+        h1 {
+            background-color: #333;
+            color: white;
+            display: block;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size:40px;
+            text-align: center;
+            padding-top:10px;
+        }
+
+        h2 {
+            background-color: #333;
+            color: white;
+            display: block;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size:13px;
+            padding-bottom:10px;
+            text-align: center;
+            margin-bottom:50px;
+        }
+
+        #input{
+            border: 0px;
+            border:1px solid #AAA;
+            border-top:0px;
+            display: block;
+            height: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0;
+            padding-left:20px;
+            width: 600px;
+            -moz-border-bottom-right-radius: 10px;
+            -moz-border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        #container {
+            padding-top:50px;
+            background-color:white;
+            height :100%;
+            width:80%;
+            margin-left: auto;
+            margin-right: auto;
+
+        }
+    </style>
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+    <h1>EXISTING HISTORY EXAMPLE</h1>
+    <h2>You will need to have gremlin-server running and accessible at localhost:8182</h2>
+    <!-- bellow is what's relevant to the console, simple window and input -->
+    <div id="window"></div>
+    <input id="input" type="text" name="query" placeholder="Enter query here   (try typing 'variable')">
+</body>
+<script>
+
+    /**
+     * @author Dylan Millikin <dylan.millikin@gmail.com>
+     * @version 1.0
+     */
+    gremlinConsole('#window', '#input', {
+        history : [
+            {query: "g = TinkerFactory.createModern().traversal();", error: null, results:["something"]},
+            {query: "crazy", error:{"message": "meep"}, results: null},
+            {query: "variable = 5 + 5;", error:null, results: [10]},
+            {query: "g.V()", error: null, results:[
+                    { id: 1, label: "person", type: "vertex", properties: { name: [ { id: 0, value: "marko" } ], age: [ { id: 1, value: 29 } ] } },
+                    { id: 2, label: "person", type: "vertex", properties: { name: [ { id: 2, value: "vadas" } ], age: [ { id: 3, value: 27 } ] } },
+                    { id: 3, label: "software", type: "vertex", properties: { name: [ { id: 4, value: "lop" } ], lang: [ { id: 5, value: "java" } ] } },
+                    { id: 4, label: "person", type: "vertex", properties: { name: [ { id: 6, value: "josh" } ], age: [ { id: 7, value: 32 } ] } },
+                    { id: 5, label: "software", type: "vertex", properties: { name: [ { id: 8, value: "ripple" } ], lang: [ { id: 9, value: "java" } ] } },
+                    { id: 6, label: "person", type: "vertex", properties: { name: [ { id: 10, value: "peter" } ], age: [ { id: 11, value: 35 } ] } }
+                ]
+            }
+        ]
+    });
+
+  </script>
+</html>

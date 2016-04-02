@@ -42,9 +42,20 @@ class DriverClient {
 
         //customize the callback params to use Result
         const customCallback = (err, results) => {
-            callback(new Result(err, results));
+            callback(this.buildResult(err, results));
         };
         this.client.execute(query, bindings, customCallback);
+    }
+
+    /**
+     * Build a result
+     *
+     * @param  {Object} Error from the driver.
+     * @param  {String} results a response result string
+     * @return {Result} a result object
+     */
+    buildResult(err, results) {
+        return new Result(err, results);
     }
 }
 

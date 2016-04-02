@@ -2,5 +2,10 @@
 import Console from './Console';
 
 global.gremlinConsole = function(...x) {
-    return new Console(...x);
+    const c = new Console(...x);
+    /**
+     * register a plugin (example)
+     */
+    // c.register(new CytoscapeVisualizerPlugin());
+    return c;
 }
