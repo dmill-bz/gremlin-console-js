@@ -2,12 +2,12 @@
   "name": "gremlin-console-js",
   "version": "0.9.0",
   "description": "Console component for gremlin-server",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "build": "babel ./src -d lib",
     "build:docs": "mr-doc --source src --output api --name gremlin-console -p --theme mr-doc-theme-cayman",
-    "build:umd": "NODE_ENV=production webpack src/index.js umd/gremlin-console.js && cp -r static/* umd/",
-    "build:min": "NODE_ENV=production webpack -p src/index.js umd/gremlin-console.min.js",
+    "build:umd": "NODE_ENV=production webpack src/index.js umd/gremlin-console.js --optimize-occurence-order --optimize-dedupe && cp -r static/* umd/",
+    "build:min": "NODE_ENV=production webpack -p src/index.js umd/gremlin-console.min.js --optimize-occurence-order --optimize-dedupe",
     "build:watch": "npm run build -- --watch",
     "test": "karma start karma.conf.js --single-run --reporters mocha",
     "test:coverage": "karma start karma.conf.js --single-run && rm -rf coverage"
@@ -22,8 +22,7 @@
     "babel-register": "~6.7.2",
     "events": "^1.1.0",
     "gremlin": "jbmusso/gremlin-javascript",
-    "jquery": "~2.2.1",
-    "jquery-ui": "~1.10.5"
+    "jquery": "~2.2.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",

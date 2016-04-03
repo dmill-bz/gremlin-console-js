@@ -17,6 +17,7 @@ module.exports = function (config) {
         },
 
         webpack: { //kind of a copy of your webpack config
+            debug:true,
             devtool: 'inline-source-map', //just do inline source maps instead of the default
             output: {
                 library: 'gremlinConsole',
@@ -53,9 +54,17 @@ module.exports = function (config) {
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
         logLevel: config.LOG_INFO,
 
-        browsers: ['PhantomJS'],
+        browsers: ['Firefox'],
+        // you can define custom flags
+        //~ customLaunchers: {
+            //~ 'PhantomJS_custom': {
+                //~ base: 'PhantomJS',
+                //~ debug: true
+            //~ }
+        //~ },
         plugins: [
             'karma-phantomjs-launcher',
+            'karma-firefox-launcher',
             'karma-mocha',
             'karma-chai',
             'karma-webpack',

@@ -37,7 +37,7 @@ class DriverClient {
     execute(query, bindings, callback) {
         if(typeof bindings === 'function') {
             callback = bindings;
-            bindings = undefined;
+            bindings = {};
         }
 
         //customize the callback params to use Result
