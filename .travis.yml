@@ -21,7 +21,7 @@ install:
 before_script:
   - npm run build
 
-script: npm run test
+script: npm run test:coverage
 
 #~ after_script:
   #~ - npm run coverage:travis

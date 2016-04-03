@@ -9,7 +9,8 @@
     "build:umd": "NODE_ENV=production webpack src/index.js umd/gremlin-console.js && cp -r static/* umd/",
     "build:min": "NODE_ENV=production webpack -p src/index.js umd/gremlin-console.min.js",
     "build:watch": "npm run build -- --watch",
-    "test": "karma start karma.conf.js --single-run"
+    "test": "karma start karma.conf.js --single-run --reporters mocha",
+    "test:coverage": "karma start karma.conf.js --single-run && rm -rf coverage"
   },
   "dependencies": {
     "babel-cli": "~6.6.5",
@@ -26,9 +27,13 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "isparta-loader": "^2.0.0",
     "karma": "^0.13.22",
     "karma-chai": "^0.1.0",
+    "karma-coverage": "^0.5.5",
+    "karma-coveralls": "^1.1.2",
     "karma-firefox-launcher": "^0.1.7",
+    "karma-html2js-preprocessor": "^0.1.0",
     "karma-mocha": "^0.2.2",
     "karma-mocha-reporter": "^2.0.0",
     "karma-phantomjs-launcher": "^1.0.0",

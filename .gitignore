@@ -3,3 +3,5 @@ dist*
 umd*
 node_modules/*
 api/*
+coverage/*
+.coveralls.yml

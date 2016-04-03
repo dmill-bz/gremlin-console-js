@@ -15,7 +15,7 @@ describe('Html.jsonSyntaxHighlight()', () => {
         highlighted.should.equal(expected);
     });
     it('should return a highlighted string from a json string', () => {
-        const highlighted = Html.jsonSyntaxHighlight(JSON.stringify(json));
-         highlighted.should.equal(expected.replace(/[\r\n]|  /g, "").replace(/\> \</g, "><")); // outputs differ to we normalize
+        const highlighted = Html.jsonSyntaxHighlight(JSON.stringify(json, undefined, 2));
+         highlighted.should.equal(expected);
     });
 });

@@ -74,9 +74,7 @@ class Console extends EventEmitter {
         }
 
         //lets init the client
-        console.log("connection to ws://" + this.options.host + ":" + this.options.port);
-        console.log(this.options.driverOptions);
-        this.client = new Client(this.options.port, this.options.host, this.options.driverOptions);
+        this.client = new Client(this.options.host, this.options.port, this.options.driverOptions);
 
         this._attachHandlers();
 

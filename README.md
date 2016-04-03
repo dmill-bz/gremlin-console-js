@@ -1,4 +1,4 @@
-
+[![Build Status](https://travis-ci.org/PommeVerte/gremlin-console-js.svg?branch=master)](https://travis-ci.org/PommeVerte/gremlin-console-js) [![Coverage Status](https://coveralls.io/repos/github/PommeVerte/gremlin-console-js/badge.svg?branch=master)](https://coveralls.io/github/PommeVerte/gremlin-console-js?branch=master)
 
 ## Gremlin Console
 

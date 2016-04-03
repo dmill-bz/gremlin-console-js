@@ -1,3 +1,4 @@
+var path = require('path');
 module.exports = function (config) {
     config.set({
 
@@ -7,10 +8,12 @@ module.exports = function (config) {
         singleRun: true, //just run once by default
 
         files: [
-            'tests.webpack.js' //just load this file
+            'tests.webpack.js', //just load this file
+            {pattern: 'test/index.html', watched: false, served:true} // load html file
         ],
         preprocessors: {
-            'tests.webpack.js': [ 'webpack', 'sourcemap' ] //preprocess with webpack and our sourcemap loader
+            'test/index.html': ['html2js'], // helps load html file for dom testing
+            'tests.webpack.js': [ 'webpack', 'sourcemap'] //preprocess with webpack and our sourcemap loader
         },
 
         webpack: { //kind of a copy of your webpack config
@@ -20,13 +23,26 @@ module.exports = function (config) {
                 libraryTarget: 'umd'
             },
             module: {
+                preLoaders: [
+                    // instrument only testing sources with Istanbul
+                    {
+                        test: /\.js$/,
+                        include: path.resolve('src/'),
+                        loader: 'isparta'
+                    }
+                ],
                 loaders: [
                     { test: /\.js$/, exclude: /node_modules/, loader: 'babel' }
                 ]
             }
         },
 
-        reporters: ['mocha'],
+        reporters: ['mocha', 'coverage', 'coveralls'],
+
+        coverageReporter: {
+            type: 'lcov', // lcov or lcovonly are required for generating lcov.info files
+            dir: 'coverage/'
+        },
 
         port: 9876,
         colors: true,
@@ -44,7 +60,10 @@ module.exports = function (config) {
             'karma-chai',
             'karma-webpack',
             'karma-sourcemap-loader',
-            'karma-mocha-reporter'
+            'karma-mocha-reporter',
+            'karma-coverage',
+            'karma-coveralls',
+            'karma-html2js-preprocessor'
         ]
 
     });
