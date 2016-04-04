@@ -11,7 +11,7 @@ gremlin-console can :
 - Maintain a query + result history (for easy re-runs using up/down arrows as well as any manipulation of the history that could be required)
 - Be extended via plugins
 
-![App Screenshot](https://github.com/PommeVerte/gremlin-console-js/blob/master/docs/screenshot.png)
+![App Screenshot](http://pommeverte.github.io/images/screenshot.png)
 
 ## Installation
 
