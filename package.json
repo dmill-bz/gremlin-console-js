@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "babel ./src -d lib",
-    "build:all": "npm un build && npm run build:umd && npm run build:min",
+    "build:all": "npm run build && npm run build:umd && npm run build:min",
     "build:docs": "mr-doc --source src --output api --name gremlin-console -p --theme mr-doc-theme-cayman",
     "build:umd": "NODE_ENV=production webpack src/index.js umd/gremlin-console.js --optimize-occurence-order --optimize-dedupe && cp -r static/* umd/",
     "build:min": "NODE_ENV=production webpack -p src/index.js umd/gremlin-console.min.js --optimize-occurence-order --optimize-dedupe",
