@@ -1,2 +1,9 @@
 .babelrc
 webpack.config.js
+test
+tests.webpack.js
+.coveralls.yml
+karma.conf.js
+static
+build
+.git
