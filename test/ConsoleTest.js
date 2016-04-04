@@ -68,10 +68,11 @@ describe('Console', () => {
                     {query:"g = TinkerFactory.createModern().traversal()", results: ["meep"], error:null},
                     {query:"g.V()", results: ["moop"], error:null}
                 ]});
-
-                gc.client.constructor.name.should.equal('DriverClient');
-                expect(gc.history).to.have.lengthOf(2);
-                gc.historyPointer.should.eql(2);
+                setTimeout(() => {
+                    gc.client.constructor.name.should.equal('DriverClient');
+                    expect(gc.history).to.have.lengthOf(2);
+                    gc.historyPointer.should.eql(2);
+                }, 3000);
         });
 
         it('should create a console and throw error if history is eronous', (done) => {
