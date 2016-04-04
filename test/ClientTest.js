@@ -70,10 +70,11 @@ describe('DriverClient', () => {
             });
         });
 
-        it('should return the right data with bindings', () => {
+        it('should return the right data with bindings', (done) => {
             const client = new Client();
             client.execute("5+variable", {variable:5}, (result) => {
                 result._rawResults[0].should.equals(10);
+                done();
             });
         });
     });
