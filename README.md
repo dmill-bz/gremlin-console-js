@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/PommeVerte/gremlin-console-js.svg?branch=master)](https://travis-ci.org/PommeVerte/gremlin-console-js) [![Coverage Status](https://coveralls.io/repos/github/PommeVerte/gremlin-console-js/badge.svg?branch=master)](https://coveralls.io/github/PommeVerte/gremlin-console-js?branch=master)
+[![Build Status](https://travis-ci.org/PommeVerte/gremlin-console-js.svg?branch=master)](https://travis-ci.org/PommeVerte/gremlin-console-js) [![Coverage Status](https://coveralls.io/repos/github/PommeVerte/gremlin-console-js/badge.svg?branch=master)](https://coveralls.io/github/PommeVerte/gremlin-console-js?branch=master) [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/PommeVerte/gremlin-console-js/master/LICENSE.txt)
 
 ## Gremlin Console
 

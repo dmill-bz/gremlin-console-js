@@ -4,7 +4,7 @@ module.exports = function (config) {
 
         basePath: '',
 
-        frameworks: ['mocha', 'chai'],
+        frameworks: ['mocha', 'chai', 'sinon'],
         singleRun: true, //just run once by default
 
         files: [
@@ -55,13 +55,6 @@ module.exports = function (config) {
         logLevel: config.LOG_INFO,
 
         browsers: ['Firefox'],
-        // you can define custom flags
-        //~ customLaunchers: {
-            //~ 'PhantomJS_custom': {
-                //~ base: 'PhantomJS',
-                //~ debug: true
-            //~ }
-        //~ },
         plugins: [
             'karma-phantomjs-launcher',
             'karma-firefox-launcher',
@@ -72,7 +65,8 @@ module.exports = function (config) {
             'karma-mocha-reporter',
             'karma-coverage',
             'karma-coveralls',
-            'karma-html2js-preprocessor'
+            'karma-html2js-preprocessor',
+            'karma-sinon'
         ]
 
     });

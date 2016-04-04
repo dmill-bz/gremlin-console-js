@@ -79,6 +79,9 @@ class Console extends EventEmitter {
         this._attachHandlers();
 
         //lets set up events
+        this.client.client.on('error', (err)=>{ // bubble up errors
+            this.emit('error', err);
+        });
         this.on('error', (err)=>{
             console.log(err);
         });
@@ -101,9 +104,7 @@ class Console extends EventEmitter {
      * @return {Void}
      */
     executeQuery(query) {
-        console.log(query);
         this.client.execute(query, (result) => {
-            console.log(result);
             this.emit('results', query, result);
         });
     }

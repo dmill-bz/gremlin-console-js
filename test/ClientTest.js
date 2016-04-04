@@ -13,15 +13,17 @@ describe('DriverClient', () => {
             client.client.host.should.equal('localhost');
         });
 
-        //~ it('should allow setting the `port` option', (done) => {
-            //~ const client = new Client("localhost", 8183);
-            //~ client.client.port.should.equal(8183);
-        //~ });
-//~
-        //~ it('should allow setting the `host` option', () => {
-            //~ const client = new Client("otherhost", 8182);
-            //~ client.client.host.should.equal('otherhost');
-        //~ });
+        it('should allow setting the `port` option', () => {
+            const client = new Client("localhost", 8183);
+            client.client.on('error', (err) => {}); //catch error
+            client.client.port.should.equal(8183);
+        });
+
+        it('should allow setting the `host` option', () => {
+            const client = new Client("otherhost", 8182);
+            client.client.on('error', (err) => {}); //catch error
+            client.client.host.should.equal('otherhost');
+        });
 
         it('should allow setting the driver options', () => {
             const client = new Client("localhost", 8182, {op:'test'});
