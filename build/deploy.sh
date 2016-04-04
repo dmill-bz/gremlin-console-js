@@ -21,6 +21,6 @@ if [ "$TRAVIS_BRANCH" == "api-generation" ] && [ "$TRAVIS_NODE_VERSION" == "5.9"
     cd $HOME/PommeVerte.github.io
     git add .
     git commit -m "gremlin-console api update"
-    git push -v "https://${GH_TOKEN}@${GH_REF}"
+    git push "https://${GH_TOKEN}@${GH_REF}"
 
 fi
