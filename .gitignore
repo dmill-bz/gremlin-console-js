@@ -5,3 +5,4 @@ node_modules/*
 api/*
 coverage/*
 .coveralls.yml
+npm-debug*

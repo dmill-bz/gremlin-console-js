@@ -55,8 +55,8 @@ class Console extends EventEmitter {
     constructor(windowElement, inputElement, options = {}) {
         super();
 
-        this.windowElement = this._getElement(windowElement);
-        this.inputElement = this._getElement(inputElement);
+        this.windowElement = Console._getElement(windowElement);
+        this.inputElement = Console._getElement(inputElement);
 
         //set window params
         this.windowElement.css({overflowY: "auto"});
@@ -198,7 +198,7 @@ class Console extends EventEmitter {
      * @param  {String|DOM} element the elementwe want to get/set
      * @return {DOM} the dom element (translated from string if necessary)
      */
-    _getElement(element) {
+    static _getElement(element) {
         if(typeof element == "string") {
             return $(element);
         } else {
@@ -247,7 +247,7 @@ class Console extends EventEmitter {
                     }
                 } else {
                     console.log("Your initializing script produced an error : \n" + result.getError());
-                    this.options.onError("Your initializing script produced an error : \n" + Html._htmlEncode(result.getError()));
+                    this.emit('error', new Error( "Your initializing script produced an error : \n" + Html.htmlEncode(result.getError())));
                 }
             });
         }

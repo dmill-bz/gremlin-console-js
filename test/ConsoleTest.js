@@ -1,4 +1,5 @@
 import Console from '../src/Console.js';
+import Result from '../src/Result.js';
 import $ from 'jquery';
 
 beforeEach(() => {
@@ -73,6 +74,30 @@ describe('Console', () => {
                 gc.historyPointer.should.eql(2);
         });
 
+        it('should create a console and throw error if history is eronous', (done) => {
+                const spy = sinon.spy();
+                const gc = new Console("#window", "#input", {history: [
+                    {query:"g = doesnotexist()", results: ["meep"], error:null},
+                    {query:"g.V()", results: ["moop"], error:null}
+                ]});
+
+                gc.on('error', (err) => {console.log(err);done();}); //catch error
+        });
+
+        it('should create a console and populate window if history provided', (done) => {
+                const window = $("#window");
+                const response = '<div class="port-section"><div class="port-query">gremlin&gt; g = TinkerFactory.createModern().traversal()</div><div class="port-response json">meep<br></div></div><div class="port-section"><div class="port-query">gremlin&gt; g.V().has(\'name\', \'marko\')</div><div class="port-response json">{<span class="key">"id":</span> <span class="number">1</span>,<span class="key">"label":</span> <span class="string">"person"</span>,<span class="key">"type":</span> <span class="string">"vertex"</span>,<span class="key">"properties":</span> {<span class="key">"name":</span> [{<span class="key">"id":</span> <span class="number">0</span>,<span class="key">"value":</span> <span class="string">"marko"</span>}],<span class="key">"age":</span> [{<span class="key">"id":</span> <span class="number">1</span>,<span class="key">"value":</span> <span class="number">29</span>}]}}<br></div></div>';
+                const spy = sinon.spy();
+                const gc = new Console(window, "#input", {history: [
+                    {query:"g = TinkerFactory.createModern().traversal()", results: ["meep"], error:null},
+                    {query:"g.V().has('name', 'marko')", results: ["moop"], error:null}
+                ]});
+                gc.on('results', (query, result) => {
+                    window.html().replace(/\n */g, '').should.eql(response);
+                    done();
+                });
+        });
+
         it('should create from jquery DOM elements', () => {
             const gc = new Console($("#window"), $("#input"));
         });
@@ -129,8 +154,6 @@ describe('Console', () => {
             e.which = 38; //up
             input.trigger(e);
             input.val().should.eql('g.V()');
-
-
         });
     });
 
@@ -172,6 +195,57 @@ describe('Console', () => {
 
             gc.executeQuery("5+5");
 
+        });
+    });
+
+    describe('.handleResults()', () => {
+        it('should populate the window with results', () => {
+            const window = $("#window");
+            const gc = new Console(window, "#input");
+            gc.handleResults('5+5', new Result(null, [10]));
+            window.html().should.eql('<div class="port-section"><div class="port-query">gremlin&gt; 5+5</div><div class="port-response json"><span class="number">10</span><br></div></div>');
+            //check appending behavior by issuing another result
+            gc.handleResults('5+15', new Result(null, [20]));
+            window.html().should.eql('<div class="port-section"><div class="port-query">gremlin&gt; 5+5</div><div class="port-response json"><span class="number">10</span><br></div></div><div class="port-section"><div class="port-query">gremlin&gt; 5+15</div><div class="port-response json"><span class="number">20</span><br></div></div>');
+        });
+
+        it('should populate the window with error', () => {
+            const window = $("#window");
+            const gc = new Console(window, "#input");
+            gc.handleResults('somethingCrazy', new Result({message: "an error occured"}, null));
+            window.html().should.eql('<div class="port-section"><div class="port-query">gremlin&gt; somethingCrazy</div><div class="port-error">Could not complete query =&gt; an error occured</div></div>');
+            //check appending behavior by issuing another result
+            gc.handleResults('somethingCrazyAgain', new Result({message: "an other error occured"}, null));
+            window.html().should.eql('<div class="port-section"><div class="port-query">gremlin&gt; somethingCrazy</div><div class="port-error">Could not complete query =&gt; an error occured</div></div><div class="port-section"><div class="port-query">gremlin&gt; somethingCrazyAgain</div><div class="port-error">Could not complete query =&gt; an other error occured</div></div>');
+        });
+    });
+
+    describe('._getElement()', () => {
+        it('should return a DOM object when given a selector', () => {
+            const window = new Console._getElement("#window");
+            window[0].constructor.name.should.eql('HTMLDivElement');
+            window.attr('id').should.eql('window');
+        });
+
+        it('should return a DOM object when given a jquery object', () => {
+            const window = new Console._getElement($("#window"));
+            window[0].constructor.name.should.eql('HTMLDivElement');
+            window.attr('id').should.eql('window');
+        });
+    });
+
+    describe('.register()', () => {
+        it('should run the plugin\'s .load()', () => {
+            const spy = sinon.spy();
+            class StubPlugin {
+                load(a) {
+                    a.constructor.name.should.eql('Console');
+                    spy();
+                }
+            }
+            const gc = new Console("#window", "#input");
+            gc.register(new StubPlugin());
+            assert.isOk(spy.called, "spy wasn't called");
         });
     });
 });

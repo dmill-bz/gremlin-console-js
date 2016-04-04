@@ -7,6 +7,13 @@ module.exports = function (config) {
         frameworks: ['mocha', 'chai', 'sinon'],
         singleRun: true, //just run once by default
 
+         client: {
+            //mocha configuration
+            mocha: {
+                timeout: 3000 // adding 1s to default timeout of 2000ms
+            }
+        },
+
         files: [
             'tests.webpack.js', //just load this file
             {pattern: 'test/index.html', watched: false, served:true} // load html file
