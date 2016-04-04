@@ -1,7 +1,7 @@
 {
-  "name": "gremlin-console-js",
+  "name": "gremlin-console",
   "version": "0.9.0",
-  "description": "Console component for gremlin-server",
+  "description": "Console for gremlin-server",
   "main": "src/index.js",
   "scripts": {
     "build": "babel ./src -d lib",
@@ -50,6 +50,7 @@
     "gremlin",
     "console"
   ],
-  "author": "Dylan Millikin",
-  "license": "Apache2"
+  "author": "Dylan Millikin <dmill@apache.org>",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/PommeVerte/gremlin-console-js"
 }

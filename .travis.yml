@@ -1,27 +1,23 @@
 language: node_js
-
 node_js:
-  - 5.9
-  - 5
-
+- 5.9
+- 5
 sudo: required
-
-env:
-  - GREMLINSERVER_VERSION="3.1.1"
-
 install:
-  # install Oracle JDK8
-  - sh -c ./build/jdk8-install.sh
-  # install gremlin-server
-  - sh -c ./build/gremlin-server/install.sh
-  # install dependencies
-  - npm install
-  - npm --prefix ./node_modules/gremlin run build
-
+- sh -c ./build/jdk8-install.sh
+- sh -c ./build/gremlin-server/install.sh
+- npm install
+- npm --prefix ./node_modules/gremlin run build
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
-  - npm run build
-
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- sleep 3
+- npm run build
 script: npm run test:coverage
+after_success:
+- sh -c ./build/deploy.sh
+env:
+  global:
+  - GREMLINSERVER_VERSION="3.1.1"
+  - GH_REF: github.com/PommeVerte/PommeVerte.github.io.git
+  - secure: eYtVwucgwammc7AJ4ERqOA+CBGxU4vE4OrM35q1mkhk6BPPycoWYcSi8YrFAcFdxQb4UfUOVjdB8h1o0YIewewX30YU/xgXi5DyhwiGcws+snH81GduJP//BkUlR6JdJ9I/Dd+/s/Fv6pWebPnBIXAJMWtkuRJiZiGBNblodz0yIcWE1lbowy9trBSRCr3sH065eHFXoFQkLB0bCtdpRM6UoNpwjGndw4oN7z8JGWRBijZTAx8fkcx74/R2P4fL6JQWFwY7blJphB9Ux0dUTCTXZrouTzt91dr0AFkjp+XKsBK0L1DzYJ8PFDUcQEOBLZPTmEJzmmclG/cj6JF9tE+H2VBel0zsrpGRNraclnspyD3/9rQb3n8rP2ZyNNFElq+pJgZ5r7G8IrcZfBqt0jWJ1J4bQQ/J9VSFkgakaFGWtb58+UN/LLeWbbPAul91yNRbY4w6McIIHK5oQL1UXT3IxEOMCb4wS6i10CoFxiwTz1jcZdNvglSQpf5EyR9GfOGb3FQFDo+9jj2XrSqe5Fao0Vsu81OPhfnYyBCLi9HNu+ewAUT1kaDdDDoou5rvmRqS4sArzhvaJUPZJVoL8tFWdbk/2SD5ONt9xfzwxZNA05sIUCAlB8o4I1A58ZGhU2ZMGMMS7THl2NbvuiG85TXBpZzkShwhuTtplIghx0pY=
