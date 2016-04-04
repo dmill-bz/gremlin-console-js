@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$TRAVIS_BRANCH" == "api-generation" ] && [ "$TRAVIS_NODE_VERSION" == "5.9" ]; then
+if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_NODE_VERSION" == "5.9" ]; then
 
     # run coveralls
     php $TRAVIS_BUILD_DIR/vendor/bin/coveralls -v
@@ -21,6 +21,6 @@ if [ "$TRAVIS_BRANCH" == "api-generation" ] && [ "$TRAVIS_NODE_VERSION" == "5.9"
     cd $HOME/PommeVerte.github.io
     git add .
     git commit -m "gremlin-console api update"
-    git push "https://${GH_TOKEN}@${GH_REF}"
+    git push --quiet "https://${GH_TOKEN}@${GH_REF}" > /dev/null 2>&1
 
 fi
