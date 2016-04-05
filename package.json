@@ -2,7 +2,7 @@
   "name": "gremlin-console",
   "version": "0.9.2",
   "description": "Console for gremlin-server",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "babel ./src -d lib",
     "build:all": "npm run build && npm run build:umd && npm run build:min",
