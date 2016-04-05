@@ -15,7 +15,6 @@ describe('Console', () => {
             expect(gc.options).to.eql({
                 port: 8182,
                 host: 'localhost',
-                history: [],
                 driverOptions: {
                     session: true
                 },
@@ -30,7 +29,6 @@ describe('Console', () => {
                 const options = {
                     port: 8183,
                     host: 'otherhost',
-                    history: [],
                     driverOptions: {
                         session: false
                     },
@@ -47,7 +45,6 @@ describe('Console', () => {
                 const gc = new Console("#window", "#input", {
                     port: 8183,
                     host: 'otherhost',
-                    history: [],
                     driverOptions: {
                         session: false
                     },
@@ -66,10 +63,11 @@ describe('Console', () => {
 
         it('should create a console and populate history if provided', () => {
 
-                const gc = new Console("#window", "#input", {history: [
+                const gc = new Console("#window", "#input");
+                gc.populateDbFromHistory([
                     {query:"g = TinkerFactory.createModern().traversal()", results: ["meep"], error:null},
                     {query:"g.V()", results: ["moop"], error:null}
-                ]});
+                ]);
                 setTimeout(() => {
                     gc.client.constructor.name.should.equal('DriverClient');
                     expect(gc.history).to.have.lengthOf(2);
@@ -79,10 +77,11 @@ describe('Console', () => {
 
         it('should create a console and throw error if history is eronous', (done) => {
                 const spy = sinon.spy();
-                const gc = new Console("#window", "#input", {history: [
+                const gc = new Console("#window", "#input");
+                gc.populateDbFromHistory([
                     {query:"g = doesnotexist()", results: ["meep"], error:null},
                     {query:"g.V()", results: ["moop"], error:null}
-                ]});
+                ]);
 
                 gc.on('error', (err) => {done();}); //catch error
         });
@@ -91,10 +90,11 @@ describe('Console', () => {
                 const window = $("#window");
                 const response = '<div class="port-section"><div class="port-query">gremlin&gt; g = TinkerFactory.createModern().traversal()</div><div class="port-response json">meep<br></div></div><div class="port-section"><div class="port-query">gremlin&gt; g.V().has(\'name\', \'marko\')</div><div class="port-response json">{<span class="key">"id":</span> <span class="number">1</span>,<span class="key">"label":</span> <span class="string">"person"</span>,<span class="key">"type":</span> <span class="string">"vertex"</span>,<span class="key">"properties":</span> {<span class="key">"name":</span> [{<span class="key">"id":</span> <span class="number">0</span>,<span class="key">"value":</span> <span class="string">"marko"</span>}],<span class="key">"age":</span> [{<span class="key">"id":</span> <span class="number">1</span>,<span class="key">"value":</span> <span class="number">29</span>}]}}<br></div></div>';
                 const spy = sinon.spy();
-                const gc = new Console(window, "#input", {history: [
+                const gc = new Console(window, "#input");
+                gc.populateDbFromHistory([
                     {query:"g = TinkerFactory.createModern().traversal()", results: ["meep"], error:null},
                     {query:"g.V().has('name', 'marko')", results: ["moop"], error:null}
-                ]});
+                ]);
                 gc.on('results', (query, result) => {
                     window.html().replace(/\n */g, '').should.eql(response);
                     done();
@@ -127,10 +127,11 @@ describe('Console', () => {
             const input = $('#input');
             const spy = sinon.spy();
             //add history for testing
-            const gc = new Console("#window", input, {history: [
-                    {query:"g = TinkerFactory.createModern().traversal()", results: ["meep"], error:null},
-                    {query:"g.V()", results: ["moop"], error:null}
-                ]});
+            const gc = new Console("#window", input);
+            gc.populateDbFromHistory([
+                {query:"g = TinkerFactory.createModern().traversal()", results: ["meep"], error:null},
+                {query:"g.V()", results: ["moop"], error:null}
+            ]);
 
             const e = $.Event("keydown");
             e.which = 38; //up
@@ -198,6 +199,7 @@ describe('Console', () => {
             gc.executeQuery("var = 5+5");
 
             gc.on('results', (query, result) => {
+                console.log(result);
                 assert.isOk(spy.called, "spy wasn't called");
                 result._rawResults[0].should.eql(10);
                 done();
@@ -210,6 +212,7 @@ describe('Console', () => {
         it('should provide a correct query and Result', (done) => {
             const gc = new Console("#window", "#input");
             gc.on('results', (query, result) => {
+                console.log(result);
                 query.should.eql('5+5');
                 result._rawResults[0].should.eql(10);
                 done();

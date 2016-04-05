@@ -64,7 +64,6 @@ class Console extends EventEmitter {
         this.options = {
             port: 8182,
             host: 'localhost',
-            history: [],
             driverOptions: {
                 session: true
             },
@@ -82,13 +81,6 @@ class Console extends EventEmitter {
         this.on('results', (query, result)=>{
             this.handleResults(query, result);
         });
-
-        //lets populate history properly if it isn't empty
-        if(this.options.history.length > 0) {
-            this.history = this.options.history;
-            this.historyPointer = this.history.length;
-            this.populateDbFromHistory();
-        }
     }
 
     /**
@@ -234,38 +226,47 @@ class Console extends EventEmitter {
     }
 
     /**
-     * Populates the state of the graph from the history.
+     * Populates the state of the graph from the provided history.
      * This essentially re-runs all the history queries so that all session variables and graph state exist.
      *
+     * @param  {Array} history the history we want to re-run.
      * @return {Void}
      */
-    populateDbFromHistory() {
-        if(typeof this.history[0].query !== 'undefined') {
-            this.initClient();
-            //lets take all queries and bunch them together to recreate env
-            let query = '';
-            for (let i = 0; (i < this.history.length - 1); i++) {
-                let result = this.client.buildResult(this.history[i].error, this.history[i].results);
-                this.handleResults(this.history[i].query, result, false); // don't emit('results') as some plugins may generate viz on each call.
-                if(typeof result.getError() === 'undefined' || result.getError() == '' || result.getError() == null)
-                    query += this.history[i].query + ";";
-            }
-            //add typing to avoid strange db errors due to sandboxing
-            query = this._addTyping(query);
+    populateDbFromHistory(history = []) {
 
-            //execute the bundled query
-            this.client.execute(query, (result) => {
-                if(!result.getError())
-                {
-                    if(this.history.length > 0) {
-                        //here we need to remove the last history item since we are going to apply it again.
-                        var lastHistory = this.history.splice(-1,1);
-                        this.executeQuery(lastHistory[0].query);
-                    }
-                } else {
-                    this.emit('error', new Error( "Your initializing script produced an error : \n" + Html.htmlEncode(result.getError())));
+        //lets populate history properly if it isn't empty
+        if(history.length > 0 && this.history.length < 1) {
+            this.history = history;
+            this.historyPointer = history.length;
+            this.populateDbFromHistory();
+
+            if(typeof this.history[0].query !== 'undefined') {
+                this.initClient();
+                //lets take all queries and bunch them together to recreate env
+                let query = '';
+                for (let i = 0; (i < this.history.length - 1); i++) {
+                    let result = this.client.buildResult(this.history[i].error, this.history[i].results);
+                    this.handleResults(this.history[i].query, result, false); // don't emit('results') as some plugins may generate viz on each call.
+                    if(typeof result.getError() === 'undefined' || result.getError() == '' || result.getError() == null)
+                        query += this.history[i].query + ";";
                 }
-            });
+                //add typing to avoid strange db errors due to sandboxing
+                query = this._addTyping(query);
+
+                //execute the bundled query
+                this.client.execute(query, (result) => {
+                    if(!result.getError())
+                    {
+                        if(this.history.length > 0) {
+                            //here we need to remove the last history item since we are going to apply it again.
+                            var lastHistory = this.history.splice(-1,1);
+                            this.executeQuery(lastHistory[0].query);
+                        }
+                    } else {
+                        this.emit('error', new Error( "Your initializing script produced an error : \n" + Html.htmlEncode(result.getError())));
+                    }
+                });
+            }
         }
     }
 
