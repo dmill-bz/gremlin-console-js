@@ -11,6 +11,7 @@
     "build:min": "NODE_ENV=production webpack -p src/index.js umd/gremlin-console.min.js --optimize-occurence-order --optimize-dedupe",
     "build:watch": "npm run build -- --watch",
     "test": "karma start karma.conf.js --single-run --reporters mocha",
+    "test:debug": "karma start karma.conf.js --reporters mocha",
     "test:coverage": "karma start karma.conf.js --single-run && rm -rf coverage"
   },
   "dependencies": {

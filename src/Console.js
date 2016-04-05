@@ -73,15 +73,9 @@ class Console extends EventEmitter {
             ...options
         }
 
-        //lets init the client
-        this.client = new Client(this.options.host, this.options.port, this.options.driverOptions);
-
         this._attachHandlers();
 
         //lets set up events
-        this.client.client.on('error', (err)=>{ // bubble up errors
-            this.emit('error', err);
-        });
         this.on('error', (err)=>{
             console.log(err);
         });
@@ -90,10 +84,31 @@ class Console extends EventEmitter {
         });
 
         //lets populate history properly if it isn't empty
-        if(typeof this.options.history[0] !== 'undefined') {
+        if(this.options.history.length > 0) {
             this.history = this.options.history;
             this.historyPointer = this.history.length;
             this.populateDbFromHistory();
+        }
+    }
+
+    /**
+     * Opens a connection with the client
+     * This is seperated and only called on query so that the user can interact and change settings/plugins
+     * after initializing the Console and still affect the client with those changes.
+     *
+     * This also has the potential to reconnect a disconnected client.
+     *
+     * @return {Void}
+     */
+    initClient() {
+        if(!this.client) {
+            //lets init the client
+            this.client = new Client(this.options.host, this.options.port, this.options.driverOptions);
+
+            //lets set up events
+            this.client.onError((err)=>{ // bubble up errors
+                this.emit('error', err);
+            });
         }
     }
 
@@ -104,6 +119,7 @@ class Console extends EventEmitter {
      * @return {Void}
      */
     executeQuery(query) {
+        this.initClient();
         this.client.execute(query, (result) => {
             this.emit('results', query, result);
         });
@@ -225,6 +241,7 @@ class Console extends EventEmitter {
      */
     populateDbFromHistory() {
         if(typeof this.history[0].query !== 'undefined') {
+            this.initClient();
             //lets take all queries and bunch them together to recreate env
             let query = '';
             for (let i = 0; (i < this.history.length - 1); i++) {
@@ -246,7 +263,6 @@ class Console extends EventEmitter {
                         this.executeQuery(lastHistory[0].query);
                     }
                 } else {
-                    console.log("Your initializing script produced an error : \n" + result.getError());
                     this.emit('error', new Error( "Your initializing script produced an error : \n" + Html.htmlEncode(result.getError())));
                 }
             });

@@ -42,7 +42,7 @@ describe('Console', () => {
                 expect(gc.options).to.eql(options);
         });
 
-        it('should create a console with the correct client', () => {
+        it('should create a console with the correct client', (done) => {
 
                 const gc = new Console("#window", "#input", {
                     port: 8183,
@@ -54,12 +54,14 @@ describe('Console', () => {
                     visualizerOptions: {
                     }
                 });
-                gc.on('error', (err) => {}); //catch error
-
-                gc.client.constructor.name.should.equal('DriverClient');
-                gc.client.client.constructor.name.should.equal('GremlinClient');
-                gc.client.client.port.should.eql(8183);
-                gc.client.client.host.should.eql("otherhost");
+                gc.on('error', (err) => {
+                    gc.client.constructor.name.should.equal('DriverClient');
+                    gc.client.client.constructor.name.should.equal('GremlinClient');
+                    gc.client.client.port.should.eql(8183);
+                    gc.client.client.host.should.eql("otherhost");
+                    done();
+                }); //catch error
+                gc.executeQuery("null");
         });
 
         it('should create a console and populate history if provided', () => {
@@ -72,7 +74,7 @@ describe('Console', () => {
                     gc.client.constructor.name.should.equal('DriverClient');
                     expect(gc.history).to.have.lengthOf(2);
                     gc.historyPointer.should.eql(2);
-                }, 3000);
+                }, 4000);
         });
 
         it('should create a console and throw error if history is eronous', (done) => {
@@ -82,7 +84,7 @@ describe('Console', () => {
                     {query:"g.V()", results: ["moop"], error:null}
                 ]});
 
-                gc.on('error', (err) => {console.log(err);done();}); //catch error
+                gc.on('error', (err) => {done();}); //catch error
         });
 
         it('should create a console and populate window if history provided', (done) => {
@@ -183,6 +185,25 @@ describe('Console', () => {
             });
 
             gc.executeQuery("5+5");
+
+        });
+
+        it('should maintain session', (done) => {
+            const gc = new Console("#window", "#input");
+            const spy = sinon.spy();
+            gc.on('results', (query, result) => {
+                spy();
+            });
+
+            gc.executeQuery("var = 5+5");
+
+            gc.on('results', (query, result) => {
+                assert.isOk(spy.called, "spy wasn't called");
+                result._rawResults[0].should.eql(10);
+                done();
+            });
+
+            gc.executeQuery("var");
 
         });
 

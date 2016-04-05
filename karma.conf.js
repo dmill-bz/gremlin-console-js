@@ -10,7 +10,7 @@ module.exports = function (config) {
          client: {
             //mocha configuration
             mocha: {
-                timeout: 3000 // adding 1s to default timeout of 2000ms
+                timeout: 5000 // adding 3s to default timeout of 2000ms
             }
         },
 

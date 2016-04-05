@@ -57,6 +57,17 @@ class DriverClient {
     buildResult(err, results) {
         return new Result(err, results);
     }
+
+    /**
+     * Register a callback on error
+     * It's rare to need this but sometimes you'll want to register a sepcific behavior against the client's error management
+     *
+     * @param  {Function} callback the method to run on client error.
+     * @return {Void}
+     */
+    onError(callback) {
+        this.client.on('error', callback);
+    }
 }
 
 export default DriverClient;

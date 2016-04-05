@@ -1,4 +1,4 @@
-import Client from '../src/DriverClient.js';
+import Client from '../src/DriverClient';
 
 describe('DriverClient', () => {
     describe('.construct()', () => {
