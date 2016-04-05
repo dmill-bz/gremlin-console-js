@@ -11,7 +11,7 @@ gremlin-console can :
 - Maintain a query + result history (for easy re-runs using up/down arrows as well as any manipulation of the history that could be required)
 - Be extended via plugins
 
-![App Screenshot](https://github.com/PommeVerte/gremlin-console-js/blob/master/docs/screenshot.png)
+![App Screenshot](http://pommeverte.github.io/images/screenshot.png)
 
 ## Installation
 
@@ -27,7 +27,7 @@ npm install gremlin-console
 import GremlinConsole from 'gremlin-console';
 
 //create a console + input combo by passing css selectors to GremlinConsole
-const gc = GremlinConsole.create('#console-window', '#console-input', {host: "localhost", port: 8182});
+const gc = GremlinConsole('#console-window', '#console-input', {host: "localhost", port: 8182});
 ```
 
 ##### In browser
@@ -58,7 +58,7 @@ You can prepare the state of the graph as well as the queries and results displa
 ```javascript
 // The following will load a modern TinkrGraph "graph", and it's traversal "g".
 // These will as a result become accessible in the console.
-var gc = GremlinConsole.create('#console-window', '#console-input', {history : [
+var gc = GremlinConsole('#console-window', '#console-input', {history : [
   {query: "graph = TinkerFactory.createModern();", error: null, results: null},
   {query: "g = graph.traversal();", error: null, results: null}
 ]});
