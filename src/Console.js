@@ -147,6 +147,8 @@ class Console extends EventEmitter {
     /**
      * Populate the history array
      *
+     * @param  {String} query  The query that was sent to the database
+     * @param  {Result} result The result sent back from the database.
      * @return {Void}
      */
     populateHistory(query, result) {
