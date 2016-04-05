@@ -192,27 +192,20 @@ describe('Console', () => {
         it('should maintain session', (done) => {
             const gc = new Console("#window", "#input");
             const spy = sinon.spy();
-            gc.on('results', (query, result) => {
-                spy();
-            });
 
             gc.executeQuery("var = 5+5");
-
-            gc.on('results', (query, result) => {
-                console.log(result);
-                assert.isOk(spy.called, "spy wasn't called");
-                result._rawResults[0].should.eql(10);
-                done();
-            });
-
-            gc.executeQuery("var");
-
+            setTimeout(() => {
+                gc.on('results', (query, result) => {
+                    result._rawResults[0].should.eql(10);
+                    done();
+                });
+                gc.executeQuery("var");
+            }, 4000);
         });
 
         it('should provide a correct query and Result', (done) => {
             const gc = new Console("#window", "#input");
             gc.on('results', (query, result) => {
-                console.log(result);
                 query.should.eql('5+5');
                 result._rawResults[0].should.eql(10);
                 done();
