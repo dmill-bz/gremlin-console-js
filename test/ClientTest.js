@@ -32,17 +32,17 @@ describe('DriverClient', () => {
     describe('.execute()', () => {
 
         it('should execute correctly with: query + callback', () => {
-            const client = new Client();
+            const client = new Client("localhost", 8182, {});
             client.execute("5+5", () => {});
         });
 
         it('should execute correctly with: query + bindings + callback', () => {
-            const client = new Client();
+            const client = new Client("localhost", 8182, {});
             client.execute("5+variable", {variable:5}, () => {});
         });
 
         it('callback should receive Parser object', (done) => {
-            const client = new Client();
+            const client = new Client("localhost", 8182, {});
             client.execute("5+5", (parser) => {
                 parser.constructor.name.should.equal('Parser');
                 parser._rawResults[0].should.equals(10);
@@ -51,7 +51,7 @@ describe('DriverClient', () => {
         });
 
         it('should return the right data with bindings', (done) => {
-            const client = new Client();
+            const client = new Client("localhost", 8182, {});
             client.execute("5+variable", {variable:5}, (parser) => {
                 parser._rawResults[0].should.equals(10);
                 done();
