@@ -1,5 +1,5 @@
 import GremlinDriver from 'gremlin';
-import Result from './Result';
+import Parser from './Parser';
 
 /**
  * This is a client class that connects to gremlin-server directly
@@ -9,9 +9,14 @@ import Result from './Result';
  */
 class DriverClient {
     /**
-     * @var {GremlinClient} see jbmusso/gremlin-javascript
+     * @type {GremlinClient} see jbmusso/gremlin-javascript
      */
     client;
+
+    /**
+     * @type {Parser} a Parser object used to parse the data
+     */
+    parser;
 
     /**
      * Create the client
@@ -21,7 +26,12 @@ class DriverClient {
      * @param  {Object}  options the driver options as per defined in the driver documentation
      * @return void
      */
-    constructor(host = "localhost", port = 8182, options = {}) {
+    constructor(host, port, options, parser) {
+        if(typeof parser === "undefined") {
+            this.parser = new Parser();
+        } else {
+            this.parser = parser;
+        }
         this.client = GremlinDriver.createClient(port, host, options);
     }
 
@@ -40,22 +50,11 @@ class DriverClient {
             bindings = {};
         }
 
-        //customize the callback params to use Result
+        //customize the callback params to use Parser
         const customCallback = (err, results) => {
-            callback(this.buildResult(err, results));
+            callback(this.parser.create(err, results));
         };
         this.client.execute(query, bindings, customCallback);
-    }
-
-    /**
-     * Build a result
-     *
-     * @param  {Object} err     Error from the driver.
-     * @param  {String} results A response result string
-     * @return {Result} a result object
-     */
-    buildResult(err, results) {
-        return new Result(err, results);
     }
 
     /**

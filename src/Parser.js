@@ -9,7 +9,7 @@ import Html from './Html';
  *
  * @author Dylan Millikin <dylan.millikin@gmail.com>
  */
-class Result {
+class Parser {
     /**
      * @var {Mixed} holds the raw server results
      */
@@ -21,14 +21,27 @@ class Result {
     _rawError;
 
     /**
-     * Constructor takes a server response and holds onto it until it is required
+     * Constructor takes a server response and holds onto it until it is required.
+     * You can create this object without passing any params. Do this if you need to hold onto it before populating it or to create multiple Parsers.
      *
-     * @param  {Mixed} results the server results for a query
+     * @param  {Error} err     A potential error from the database.
+     * @param  {Mixed} results The server results for a query
      * @return {Void}
      */
     constructor(err, results) {
-        this._rawResults = results;
-        this._rawError = err;
+            this._rawError = err;
+            this._rawResults = results;
+    }
+
+    /**
+     * Creates a Parser object
+     *
+     * @param  {Error} err     A potential error from the database.
+     * @param  {Mixed} results The server results for a query
+     * @return {Parser} A populated Parser object
+     */
+    create(err, results) {
+        return new Parser(err, results);
     }
 
     /**
@@ -107,4 +120,4 @@ class Result {
     }
 }
 
-export default Result;
+export default Parser;

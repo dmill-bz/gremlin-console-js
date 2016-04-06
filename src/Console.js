@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import Client from './DriverClient';
 import Html from './Html';
+import Parser from './Parser';
 import $ from 'jquery';
 
 /**
@@ -11,24 +12,30 @@ import $ from 'jquery';
 class Console extends EventEmitter {
 
     /**
-     * @var {Object} List of options for the console
+     * @type {Object} List of options for the console
      */
     options;
 
     /**
-     * @var {DOM} Jquery element for the window part of the console
+     * @type {DOM} Jquery element for the window part of the console
      */
     windowElement;
 
     /**
-     * @var {DOM} Jquery element for the input part of the console
+     * @type {DOM} Jquery element for the input part of the console
      */
     inputElement;
 
     /**
-     * @var {GremlinClient} The driver client class from jbmusso/gremlin-javascript
+     * @type {GremlinClient} The driver client class from jbmusso/gremlin-javascript
      */
     client;
+
+    /**
+     * @type {Parser} This is a Parser object that can be used to parse responses from the DB. Mostly useful for custom serializers.
+     * The Console mostly holds onto this to pass id down to the Clients
+     */
+    parser;
 
     /**
      * @var {Array} this holds all query and response history in the form of:
@@ -74,12 +81,15 @@ class Console extends EventEmitter {
 
         this._attachHandlers();
 
+        //set default parser up
+        this.parser = new Parser();
+
         //lets set up events
         this.on('error', (err)=>{
             console.log(err);
         });
-        this.on('results', (query, result)=>{
-            this.handleResults(query, result);
+        this.on('results', (query, parser)=>{
+            this.handleResults(query, parser);
         });
     }
 
@@ -95,7 +105,7 @@ class Console extends EventEmitter {
     initClient() {
         if(!this.client) {
             //lets init the client
-            this.client = new Client(this.options.host, this.options.port, this.options.driverOptions);
+            this.client = new Client(this.options.host, this.options.port, this.options.driverOptions, this.parser);
 
             //lets set up events
             this.client.onError((err)=>{ // bubble up errors
@@ -112,8 +122,8 @@ class Console extends EventEmitter {
      */
     executeQuery(query) {
         this.initClient();
-        this.client.execute(query, (result) => {
-            this.emit('results', query, result);
+        this.client.execute(query, (parser) => {
+            this.emit('results', query, parser);
         });
     }
 
@@ -121,26 +131,26 @@ class Console extends EventEmitter {
      * Applies logic based on results
      *
      * @param  {String}  query         The query run against db
-     * @param  {Result}  result        The database result object
+     * @param  {Parser}  parser        The database parser object
      * @param  {Boolean} recordHistory Whether or not we should record this request in the history
      * @return {Void}
      */
-    handleResults(query, result, recordHistory = true) {
+    handleResults(query, parser, recordHistory = true) {
         //add results to window
         let response = $('<div>').addClass('port-section');
         response.append($('<div>').addClass("port-query").html('gremlin> ' + Html.htmlEncode(query)));
 
-        if(!result.getError()) {
-            response.append(result.getHtmlResults());
+        if(!parser.getError()) {
+            response.append(parser.getHtmlResults());
         } else {
-            response.append(result.getHtmlError());
+            response.append(parser.getHtmlError());
         }
 
         this.windowElement.append(response);
         this.windowElement.animate({ scrollTop: this.windowElement[0].scrollHeight }, "slow");
         //add results to history
         if(recordHistory) {
-            this.populateHistory(query, result);
+            this.populateHistory(query, parser);
         }
     }
 
@@ -148,20 +158,20 @@ class Console extends EventEmitter {
      * Populate the history array
      *
      * @param  {String} query  The query that was sent to the database
-     * @param  {Result} result The result sent back from the database.
+     * @param  {Parser} parser The parser sent back from the database.
      * @return {Void}
      */
-    populateHistory(query, result) {
+    populateHistory(query, parser) {
          if(query != ""                                                                 // not an empty query
             && (
-                !result.getError()
+                !parser.getError()
                 || (
                     typeof this.history[this.history.length - 1] == 'undefined'     // if error then don't save the same query multiple
                     || query != this.history[this.history.length - 1].query         // times.
                     )
                 )
             ) {
-            this.history.push($.extend({query: query}, result.getHistory()));
+            this.history.push($.extend({query: query}, parser.getHistory()));
         }
         this.historyPointer = this.history.length;
     }
@@ -177,7 +187,7 @@ class Console extends EventEmitter {
         //Lets attach the enter key down handler
         this.inputElement.keypress(function(e) {
             if(e.which == 13) {
-                var result = widget.executeQuery($(this).val());
+                widget.executeQuery($(this).val());
                 $(this).val('');
             }
         });
@@ -247,17 +257,17 @@ class Console extends EventEmitter {
                 //lets take all queries and bunch them together to recreate env
                 let query = '';
                 for (let i = 0; (i < this.history.length - 1); i++) {
-                    let result = this.client.buildResult(this.history[i].error, this.history[i].results);
-                    this.handleResults(this.history[i].query, result, false); // don't emit('results') as some plugins may generate viz on each call.
-                    if(typeof result.getError() === 'undefined' || result.getError() == '' || result.getError() == null)
+                    let parser = this.parser.create(this.history[i].error, this.history[i].results); // creates a Parser
+                    this.handleResults(this.history[i].query, parser, false); // don't emit('results') as some plugins may generate viz on each call.
+                    if(typeof parser.getError() === 'undefined' || parser.getError() == '' || parser.getError() == null)
                         query += this.history[i].query + ";";
                 }
                 //add typing to avoid strange db errors due to sandboxing
                 query = this._addTyping(query);
 
                 //execute the bundled query
-                this.client.execute(query, (result) => {
-                    if(!result.getError())
+                this.client.execute(query, (parser) => {
+                    if(!parser.getError())
                     {
                         if(this.history.length > 0) {
                             //here we need to remove the last history item since we are going to apply it again.
@@ -265,7 +275,7 @@ class Console extends EventEmitter {
                             this.executeQuery(lastHistory[0].query);
                         }
                     } else {
-                        this.emit('error', new Error( "Your initializing script produced an error : \n" + Html.htmlEncode(result.getError())));
+                        this.emit('error', new Error( "Your initializing script produced an error : \n" + Html.htmlEncode(parser.getError())));
                     }
                 });
             }

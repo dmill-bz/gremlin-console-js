@@ -1,5 +1,5 @@
 import Console from '../src/Console.js';
-import Result from '../src/Result.js';
+import Parser from '../src/Parser.js';
 import $ from 'jquery';
 
 beforeEach(() => {
@@ -95,7 +95,7 @@ describe('Console', () => {
                     {query:"g = TinkerFactory.createModern().traversal()", results: ["meep"], error:null},
                     {query:"g.V().has('name', 'marko')", results: ["moop"], error:null}
                 ]);
-                gc.on('results', (query, result) => {
+                gc.on('results', (query, parser) => {
                     window.html().replace(/\n */g, '').should.eql(response);
                     done();
                 });
@@ -109,10 +109,10 @@ describe('Console', () => {
             const input = $('#input');
             const spy = sinon.spy();
             const gc = new Console("#window", input);
-            gc.on('results', (query, result) => {
+            gc.on('results', (query, parser) => {
                 spy();
                 query.should.eql("5+5");
-                result._rawResults[0].should.eql(10);
+                parser._rawResults[0].should.eql(10);
                 assert.isOk(spy.called, "spy wasn't called");
                 done();
             });
@@ -179,7 +179,7 @@ describe('Console', () => {
         it('should run an event once finished', (done) => {
             const gc = new Console("#window", "#input");
             const spy = sinon.spy();
-            gc.on('results', (query, result) => {
+            gc.on('results', (query, parser) => {
                 spy();
                 assert.isOk(spy.called, "spy wasn't called");
                 done();
@@ -195,19 +195,19 @@ describe('Console', () => {
 
             gc.executeQuery("var = 5+5");
             setTimeout(() => {
-                gc.on('results', (query, result) => {
-                    result._rawResults[0].should.eql(10);
+                gc.on('results', (query, parser) => {
+                    parser._rawResults[0].should.eql(10);
                     done();
                 });
                 gc.executeQuery("var");
             }, 4000);
         });
 
-        it('should provide a correct query and Result', (done) => {
+        it('should provide a correct query and Parser', (done) => {
             const gc = new Console("#window", "#input");
-            gc.on('results', (query, result) => {
+            gc.on('results', (query, parser) => {
                 query.should.eql('5+5');
-                result._rawResults[0].should.eql(10);
+                parser._rawResults[0].should.eql(10);
                 done();
             });
 
@@ -220,20 +220,20 @@ describe('Console', () => {
         it('should populate the window with results', () => {
             const window = $("#window");
             const gc = new Console(window, "#input");
-            gc.handleResults('5+5', new Result(null, [10]));
+            gc.handleResults('5+5', new Parser(null, [10]));
             window.html().should.eql('<div class="port-section"><div class="port-query">gremlin&gt; 5+5</div><div class="port-response json"><span class="number">10</span><br></div></div>');
             //check appending behavior by issuing another result
-            gc.handleResults('5+15', new Result(null, [20]));
+            gc.handleResults('5+15', new Parser(null, [20]));
             window.html().should.eql('<div class="port-section"><div class="port-query">gremlin&gt; 5+5</div><div class="port-response json"><span class="number">10</span><br></div></div><div class="port-section"><div class="port-query">gremlin&gt; 5+15</div><div class="port-response json"><span class="number">20</span><br></div></div>');
         });
 
         it('should populate the window with error', () => {
             const window = $("#window");
             const gc = new Console(window, "#input");
-            gc.handleResults('somethingCrazy', new Result({message: "an error occured"}, null));
+            gc.handleResults('somethingCrazy', new Parser({message: "an error occured"}, null));
             window.html().should.eql('<div class="port-section"><div class="port-query">gremlin&gt; somethingCrazy</div><div class="port-error">Could not complete query =&gt; an error occured</div></div>');
             //check appending behavior by issuing another result
-            gc.handleResults('somethingCrazyAgain', new Result({message: "an other error occured"}, null));
+            gc.handleResults('somethingCrazyAgain', new Parser({message: "an other error occured"}, null));
             window.html().should.eql('<div class="port-section"><div class="port-query">gremlin&gt; somethingCrazy</div><div class="port-error">Could not complete query =&gt; an error occured</div></div><div class="port-section"><div class="port-query">gremlin&gt; somethingCrazyAgain</div><div class="port-error">Could not complete query =&gt; an other error occured</div></div>');
         });
     });
