@@ -46,4 +46,5 @@ export default BasicPlugin;
 
 ## Public APIs
 When overriding the Parser or Client you should implement the same public API as the default classes in `gremlin-console-js`. It is recommended you check the source code and the [API](http://pommeverte.github.io/gremlin-console-js/)
+
 Properties marked with the `_` prefix are obviously private and don't need to be implemented. Just in case.
