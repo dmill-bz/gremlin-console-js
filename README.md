@@ -49,8 +49,9 @@ The available options are :
 
 
 ## Security
-**--WARNING--** Due to the nature of gremlin-console being executed locally in the browser and communicating directly with gremlin-server. If you plan on using it outside of the scope of a secure network (localhost for example) you will need to enable [sandboxing](http://tinkerpop.apache.org/docs/3.1.1-incubating/reference/#_security) (amongst other things) on gremlin-server. This configuration is required to ensure that people running queries in the console don't get access to secure server side information.
+**--WARNING--** Due to the nature of gremlin-console being executed locally in the browser and communicating directly with gremlin-server, there are some security implications. If you can't trust your users or are using `gremlin-console-js` outside of the scope of a secure network (ie : public network) you will need to enable [sandboxing](http://tinkerpop.apache.org/docs/3.1.1-incubating/reference/#_security) (amongst other things) on gremlin-server. This configuration is required to ensure that people running queries in the console don't get access to secure server side information.
 
+Another option (though not a replacement to sandboxing) is to use `gc-ajax-plugin` which will allow you not to expose the gremlin-server websocket. This has more overhead but it will provid the added benefit that you can handle Authentication and Authorization on your server app level. _(see plugin section)_
 
 ## Populating the console on init
 You can prepare the state of the graph as well as the queries and results display in the console upon initializing by providing a history object in the options:
@@ -60,14 +61,19 @@ var gc = GremlinConsole('#console-window', '#console-input');
 // Provide a history array to populate the graph
 // In this case we create a modern graph "graph", with a traversal object "g".
 gc.populateDbFromHistory([
-  {query: "graph = TinkerFactory.createModern();", error: null, results: null},
-  {query: "g = graph.traversal();", error: null, results: null}
+  {query: "graph = TinkerFactory.createModern();", error: undefined, results: [null]},
+  {query: "g = graph.traversal();", error: undefined, results: [null]}
 ]);
 ```
+_What happens under the hood : gremlin-console will concatenate the n-1 queries from the provided history and submit them to the server. Essentially setting the graph's state. Then it will rerun the last query so as to trigger the proper events._ 
 
 
 ## Plugins
+The following plugins are currently available for `gremlin-console` : 
 
+- [`gc-graphson-text-plugin`](https://github.com/PommeVerte/gc-graphson-text-plugin) : Modifies the output display. Makes the console show the results in the same way the Apache TinkerPop terminal console displays it's results.
+- [`gc-ajax-plugin`](https://github.com/PommeVerte/gc-ajax-plugin) : Makes `gremlin-console` run it's queries against an `http` web page instead of directly against the gremlin-server's `websocket`. This can help provide more control over Authentication and Authorization of users on your website.
+- [`gc-cytoscape-plugin`](https://github.com/PommeVerte/gc-cytoscape-plugin) : **highly experimental** A graph visualization tool for `gremlin-console`. This is only useful for very small data sets.
 
 ## API
 You can find the API [here](http://pommeverte.github.io/gremlin-console-js/).
