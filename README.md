@@ -68,12 +68,28 @@ gc.populateDbFromHistory([
 _What happens under the hood : gremlin-console will concatenate the n-1 queries from the provided history and submit them to the server. Essentially setting the graph's state. Then it will rerun the last query so as to trigger the proper events._ 
 
 
+## Events
+You can register lambdas against events as follows : 
+```javascript
+const gc = GremlinConsole('#console-window', '#console-input', {host: "localhost", port: 8182});
+gc.on('results', (err, result) => {});
+```
+There are currently only two supported events :
+- **results** is triggered when the client receives a response from the server. It provides the following params:
+  - `err` : An object with an `err.message` property.
+  - `result` : A `Parser` object.
+- **error** is triggered when a structural error occurs (different from a query error). It provides the following params:
+  - `err` : An `Error` object.
+
+
 ## Plugins
 The following plugins are currently available for `gremlin-console` : 
 
 - [`gc-graphson-text-plugin`](https://github.com/PommeVerte/gc-graphson-text-plugin) : Modifies the output display. Makes the console show the results in the same way the Apache TinkerPop terminal console displays it's results.
 - [`gc-ajax-plugin`](https://github.com/PommeVerte/gc-ajax-plugin) : Makes `gremlin-console` run it's queries against an `http` web page instead of directly against the gremlin-server's `websocket`. This can help provide more control over Authentication and Authorization of users on your website.
 - [`gc-cytoscape-plugin`](https://github.com/PommeVerte/gc-cytoscape-plugin) : **highly experimental** A graph visualization tool for `gremlin-console`. This is only useful for very small data sets.
+ 
+If you're interested in developping plugins check the [plugin documentation](docs/Plugins.md).
 
 ## API
 You can find the API [here](http://pommeverte.github.io/gremlin-console-js/).
