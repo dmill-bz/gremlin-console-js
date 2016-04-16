@@ -11,7 +11,7 @@ class DriverClient {
     /**
      * @type {GremlinClient} see jbmusso/gremlin-javascript
      */
-    client;
+    _client;
 
     /**
      * @type {Parser} a Parser object used to parse the data
@@ -32,7 +32,7 @@ class DriverClient {
         } else {
             this.parser = parser;
         }
-        this.client = GremlinDriver.createClient(port, host, options);
+        this._client = GremlinDriver.createClient(port, host, options);
     }
 
     /**
@@ -54,7 +54,7 @@ class DriverClient {
         const customCallback = (err, results) => {
             callback(this.parser.create(err, results));
         };
-        this.client.execute(query, bindings, customCallback);
+        this._client.execute(query, bindings, customCallback);
     }
 
     /**
@@ -65,7 +65,7 @@ class DriverClient {
      * @return {Void}
      */
     onError(callback) {
-        this.client.on('error', callback);
+        this._client.on('error', callback);
     }
 }
 

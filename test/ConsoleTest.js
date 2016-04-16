@@ -53,9 +53,9 @@ describe('Console', () => {
                 });
                 gc.on('error', (err) => {
                     gc.client.constructor.name.should.equal('DriverClient');
-                    gc.client.client.constructor.name.should.equal('GremlinClient');
-                    gc.client.client.port.should.eql(8183);
-                    gc.client.client.host.should.eql("otherhost");
+                    gc.client._client.constructor.name.should.equal('GremlinClient');
+                    gc.client._client.port.should.eql(8183);
+                    gc.client._client.host.should.eql("otherhost");
                     done();
                 }); //catch error
                 gc.executeQuery("null");

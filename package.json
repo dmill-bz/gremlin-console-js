@@ -23,7 +23,7 @@
     "babel-preset-stage-2": "~6.5.0",
     "babel-register": "~6.7.2",
     "events": "^1.1.0",
-    "gremlin": "jbmusso/gremlin-javascript",
+    "gremlin": "^2.2.0",
     "jquery": "~2.2.1"
   },
   "devDependencies": {

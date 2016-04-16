@@ -6,14 +6,14 @@ describe('DriverClient', () => {
 
         it('should allow setting the `port` option', () => {
             const client = new Client("localhost", 8183, {});
-            client.client.on('error', (err) => {}); //catch error
-            client.client.port.should.equal(8183);
+            client._client.on('error', (err) => {}); //catch error
+            client._client.port.should.equal(8183);
         });
 
         it('should allow setting the `host` option', () => {
             const client = new Client("otherhost", 8182);
-            client.client.on('error', (err) => {}); //catch error
-            client.client.host.should.equal('otherhost');
+            client._client.on('error', (err) => {}); //catch error
+            client._client.host.should.equal('otherhost');
         });
 
         it('should allow setting the `parser` option', () => {
@@ -25,7 +25,7 @@ describe('DriverClient', () => {
 
         it('should allow setting the driver options', () => {
             const client = new Client("localhost", 8182, {op:'test'});
-            client.client.options.op.should.equal('test');
+            client._client.options.op.should.equal('test');
         });
     });
 
