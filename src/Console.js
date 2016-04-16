@@ -111,6 +111,9 @@ class Console extends EventEmitter {
             this.client.onError((err)=>{ // bubble up errors
                 this.emit('error', err);
             });
+            this.client.onOpen(()=>{ // bubble up errors
+                this.emit('open');
+            });
         }
     }
 

@@ -67,6 +67,16 @@ class DriverClient {
     onError(callback) {
         this._client.on('error', callback);
     }
+
+    /**
+     * Register a callback on Open
+     *
+     * @param  {Function} callback the method to run on client error.
+     * @return {Void}
+     */
+    onOpen(callback) {
+        this._client.on('open', callback);
+    }
 }
 
 export default DriverClient;
