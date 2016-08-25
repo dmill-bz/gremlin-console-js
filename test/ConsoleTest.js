@@ -100,6 +100,31 @@ describe('Console', () => {
                     done();
                 });
         });
+        
+        it('should create a console and populate a graph and traversal', (done) => {
+                const window = $("#window");
+                const input = $('#input');
+                const response = '<div class="port-section"><div class="port-query">gremlin&gt; g = TinkerFactory.createModern().traversal()</div><div class="port-response json">meep<br></div></div><div class="port-section"><div class="port-query">gremlin&gt; g.V().has(\'name\', \'marko\')</div><div class="port-response json">{<span class="key">"id":</span> <span class="number">1</span>,<span class="key">"label":</span> <span class="string">"person"</span>,<span class="key">"type":</span> <span class="string">"vertex"</span>,<span class="key">"properties":</span> {<span class="key">"name":</span> [{<span class="key">"id":</span> <span class="number">0</span>,<span class="key">"value":</span> <span class="string">"marko"</span>}],<span class="key">"age":</span> [{<span class="key">"id":</span> <span class="number">1</span>,<span class="key">"value":</span> <span class="number">29</span>}]}}<br></div></div>';
+                const spy = sinon.spy();
+                const gc = new Console(window, "#input");
+                const initial = true;
+                gc.populateDbFromHistory([
+                    {query:"h = TinkerFactory.createModern().traversal()", results: ["meep"], error:null},
+                    {query:"h.V().has('name', 'marko')", results: ["moop"], error:null}
+                ]);
+                gc.on('results', (query, parser) => {
+                    if(initial){
+                        initial = false;
+                        input.val("h.V().has('name', 'marko').count()");
+                        
+                        const e = $.Event("keydown");
+                        e.which = 13; //enter
+                    } else {
+                        window.html().replace(/\n */g, '').should.eql(response);
+                        done();
+                    }
+                });
+        });
 
         it('should create from jquery DOM elements', () => {
             const gc = new Console($("#window"), $("#input"));
