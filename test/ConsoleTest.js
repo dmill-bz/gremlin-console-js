@@ -118,6 +118,7 @@ describe('Console', () => {
                         
                         const e = $.Event("keydown");
                         e.which = 13; //enter
+                        initial = false;
                     } else {
                         window.html().replace(/\n */g, '').should.eql(response);
                         done();
